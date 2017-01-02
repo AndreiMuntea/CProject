@@ -8,3 +8,12 @@ ListRead
 ListMerge
 ListPrint
 ListMerge
+ListPrint
+TreeRead
+1 2 3 3
+TreeInsert
+3
+TreeRemove
+3
+TreeSearch
+3

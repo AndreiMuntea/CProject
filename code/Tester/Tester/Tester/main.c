@@ -2,7 +2,7 @@
 #include <stdlib.h>  
 #include <crtdbg.h> 
 
-#include "Interface\interface.h"
+#include "Interface/interface.h"
 
 int main(int argc, char* argv[])
 {

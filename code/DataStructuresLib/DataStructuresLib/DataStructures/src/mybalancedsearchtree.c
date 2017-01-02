@@ -279,6 +279,11 @@ STATUS MyBalancedSearchTreeInsert(PMY_BALANCED_SEARCH_TREE tree, int element)
    status = ZERO_EXIT_STATUS;
    node = NULL;
 
+   if (MyBalancedSearchTreeSearchElement(tree, element) == TRUE)
+   {
+      goto EXIT;
+   }
+
    status = CreateTreeNode(&node, element);
    if (!SUCCESS(status))
    {

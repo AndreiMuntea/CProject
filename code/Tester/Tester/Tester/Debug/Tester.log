@@ -1,5 +1,12 @@
-﻿  main.c
+﻿  parser.c
+  main.c
   interface.c
+  stringhelper.c
+  vectorController.c
+  heapController.c
+  hashTableController.c
+  doubleLinkedListController.c
+  balancedTreeController.c
   Generating Code...
   Tester.vcxproj -> D:\Projects\C Projects\ProjectC\code\Tester\Tester\Debug\Tester.exe
   Tester.vcxproj -> D:\Projects\C Projects\ProjectC\code\Tester\Tester\Debug\Tester.pdb (Full PDB)

@@ -214,6 +214,12 @@ STATUS ListMerge(PDOUBLE_LINKED_LIST_CONTROLLER listController)
       goto EXIT;
    }
 
+   if(listController->size + 1 >= MAX_LIST_STRUCTS)
+   {
+      status = STRUCTS_LIMIT_REACHED;
+      goto EXIT;
+   }
+
    status = MyDoubleLinkedListMerge(listController->lists[listController->currentList], listController->lists[listController->currentList - 1], &res);
    if (!SUCCESS(status))
    {
@@ -226,9 +232,9 @@ STATUS ListMerge(PDOUBLE_LINKED_LIST_CONTROLLER listController)
       goto EXIT;
    }
 
-   MyDoubleLinkedListDestroy(&(listController->lists[listController->currentList]));
-   MyDoubleLinkedListDestroy(&(listController->lists[listController->currentList - 1]));
-   listController->lists[--listController->currentList] = res;
+   ++listController->size;
+   listController->currentList = listController->size - 1;
+   listController->lists[listController->currentList] = res;
 
 EXIT:
    if (!SUCCESS(status))
