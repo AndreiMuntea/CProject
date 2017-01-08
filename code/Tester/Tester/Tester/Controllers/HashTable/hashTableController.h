@@ -24,4 +24,6 @@ STATUS HashTableRead(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser);
 
 STATUS HashTableSearch(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser, FILE* outputFile);
 
+STATUS HashTableGoTo(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser);
+
 #endif // HASHTABLECONTROLLER_H

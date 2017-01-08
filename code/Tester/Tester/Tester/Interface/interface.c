@@ -141,7 +141,7 @@ const char* ErrorMessage(STATUS errorStatus)
    switch (errorStatus)
    {
    case INVALID_INPUT:
-      return INVALID_COMMAND_ERR;
+      return INVALID_INPUT_ERR;
    case INVALID_COMMAND:
       return INVALID_COMMAND_ERR;
    case NULL_POINTER:
@@ -164,6 +164,8 @@ const char* ErrorMessage(STATUS errorStatus)
       return UNDEFINED_STRUCTURE;
    case PREVIOUS_STRUCTURE_UNDEFINED:
       return UNDEFINED_PREVIOUS;
+   case BUFFER_OVERFLOW:
+      return INVALID_COMMAND_ERR;
    default:
       return UNDEFINED_ERROR;
    }
@@ -425,6 +427,10 @@ STATUS AnalyzeCommand(PMY_INTERFACE myInterface, const char* command)
    {
       status = HashTableSearch(myInterface->hashController, myInterface->parser, myInterface->outputFile);
    }
+   else if (EqualStrings(command, HASH_TABLE_GO_TO) == TRUE)
+   {
+      status = HashTableGoTo(myInterface->hashController, myInterface->parser);
+   }
    else if (EqualStrings(command, HEAP_READ) == TRUE)
    {
       status = HeapRead(myInterface->heapController, myInterface->parser);
@@ -432,6 +438,10 @@ STATUS AnalyzeCommand(PMY_INTERFACE myInterface, const char* command)
    else if (EqualStrings(command, HEAP_INSERT) == TRUE)
    {
       status = HeapInsert(myInterface->heapController, myInterface->parser);
+   }
+   else if (EqualStrings(command, HEAP_GO_TO) == TRUE)
+   {
+      status = HeapGoTo(myInterface->heapController, myInterface->parser);
    }
    else if (EqualStrings(command, HEAP_REMOVE) == TRUE)
    {
@@ -449,6 +459,10 @@ STATUS AnalyzeCommand(PMY_INTERFACE myInterface, const char* command)
    else if (EqualStrings(command, TREE_REMOVE) == TRUE)
    {
       status = BalancedTreeRemove(myInterface->treeController, myInterface->parser);
+   }
+   else if (EqualStrings(command, TREE_GO_TO) == TRUE)
+   {
+      status = BalancedTreeGoTo(myInterface->treeController, myInterface->parser);
    }
    else if (EqualStrings(command, TREE_SEARCH) == TRUE)
    {

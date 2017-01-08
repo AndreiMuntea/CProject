@@ -2,6 +2,7 @@
 
 #include "vectorController.h"
 #include "../controllerStatuses.h"
+#include "../Heap/heapController.h"
 
 STATUS VectorControllerCreate(PVECTOR_CONTROLLER* vectorController)
 {
@@ -86,7 +87,7 @@ STATUS VectorRead(PVECTOR_CONTROLLER vectorController, PPARSER parser)
    ++vectorController->size;
    vectorController->currentVector = vectorController->size - 1;
 
-   if (vectorController->size >= MAX_VECTOR_STRUCTS)
+   if (vectorController->size> MAX_VECTOR_STRUCTS)
    {
       status = STRUCTS_LIMIT_REACHED;
       goto EXIT;
@@ -130,7 +131,10 @@ STATUS VectorRead(PVECTOR_CONTROLLER vectorController, PPARSER parser)
 EXIT:
    if (!SUCCESS(status))
    {
-      MyVectorDestroy(&(vectorController->vectors[vectorController->currentVector--]));
+      if (vectorController->size <= MAX_VECTOR_STRUCTS)
+      {
+         MyVectorDestroy(&(vectorController->vectors[vectorController->currentVector--]));
+      }
       vectorController->size--;
    }
    return status;

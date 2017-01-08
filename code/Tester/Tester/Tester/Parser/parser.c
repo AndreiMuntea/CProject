@@ -225,6 +225,12 @@ STATUS ParserNextString(PPARSER parser, char** buffer, int maxBufferSize)
       goto EXIT;
    }
 
+   status = ParserSkipSpaces(parser);
+   if (!SUCCESS(status))
+   {
+      goto EXIT;
+   }
+
    buff = (char*)malloc(maxBufferSize * sizeof(char));
    if (NULL == buff)
    {
@@ -247,7 +253,7 @@ STATUS ParserNextString(PPARSER parser, char** buffer, int maxBufferSize)
       }
 
       // we got a delimiter
-      if (parser->bufferSize == 0 || IsEndOfLine(parser->buffer[parser->currentIndex]) == TRUE)
+      if (parser->bufferSize == 0 || IsDelimiter(parser->buffer[parser->currentIndex]) == TRUE)
       {
          break;
       }

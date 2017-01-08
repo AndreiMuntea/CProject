@@ -88,11 +88,12 @@ STATUS ListRead(PDOUBLE_LINKED_LIST_CONTROLLER listController, PPARSER parser)
    ++listController->size;
    listController->currentList = listController->size - 1;
 
-   if (listController->size >= MAX_LIST_STRUCTS)
+   if (listController->size > MAX_LIST_STRUCTS)
    {
       status = STRUCTS_LIMIT_REACHED;
       goto EXIT;
    }
+
 
    status = MyDoubleLinkedListCreate(&(listController->lists[listController->currentList]));
    if (!SUCCESS(status))
@@ -132,7 +133,10 @@ STATUS ListRead(PDOUBLE_LINKED_LIST_CONTROLLER listController, PPARSER parser)
 EXIT:
    if (!SUCCESS(status))
    {
-      MyDoubleLinkedListDestroy(&(listController->lists[listController->currentList--]));
+      if (listController->size <= MAX_LIST_STRUCTS) {
+         MyDoubleLinkedListDestroy(&(listController->lists[listController->currentList--]));
+      };
+
       listController->size--;
    }
    return status;

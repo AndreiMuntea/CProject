@@ -27,4 +27,6 @@ STATUS HeapRead(PHEAP_CONTROLLER heapController, PPARSER parser);
 
 STATUS HeapRemove(PHEAP_CONTROLLER heapController, FILE* outputFile);
 
+STATUS HeapGoTo(PHEAP_CONTROLLER heapController, PPARSER parser);
+
 #endif //HEAPCONTROLLER_H

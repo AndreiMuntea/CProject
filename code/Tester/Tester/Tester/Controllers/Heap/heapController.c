@@ -137,11 +137,12 @@ STATUS HeapRead(PHEAP_CONTROLLER heapController, PPARSER parser)
    ++heapController->size;
    heapController->currentHeap = heapController->size - 1;
 
-   if (heapController->size >= MAX_HEAP_STRUCTS)
+   if (heapController->size > MAX_HEAP_STRUCTS)
    {
       status = STRUCTS_LIMIT_REACHED;
       goto EXIT;
    }
+
 
    status = MyHeapCreate(&(heapController->heap[heapController->currentHeap]));
    if (!SUCCESS(status))
@@ -181,7 +182,10 @@ STATUS HeapRead(PHEAP_CONTROLLER heapController, PPARSER parser)
 EXIT:
    if (!SUCCESS(status))
    {
-      MyHeapDestroy(&(heapController->heap[heapController->currentHeap--]));
+      if (heapController->size <= MAX_HEAP_STRUCTS)
+      {
+         MyHeapDestroy(&(heapController->heap[heapController->currentHeap--]));
+      }
       heapController->size--;
    }
    return status;
@@ -221,6 +225,44 @@ STATUS HeapRemove(PHEAP_CONTROLLER heapController, FILE* outputFile)
       goto EXIT;
    }
 
+
+EXIT:
+   return status;
+}
+
+STATUS HeapGoTo(PHEAP_CONTROLLER heapController, PPARSER parser)
+{
+   STATUS status;
+   BOOLEAN ans;
+   int pos;
+
+   status = ZERO_EXIT_STATUS;
+
+   status = ParserNextInt(parser, &pos);
+   if (!SUCCESS(status))
+   {
+      goto EXIT;
+   }
+
+   status = ParserEmptyLine(parser, &ans);
+   if (!SUCCESS(status))
+   {
+      goto EXIT;
+   }
+
+   if (ans == FALSE)
+   {
+      status = INVALID_COMMAND;
+      goto EXIT;
+   }
+
+   if (pos < 0 || pos >= heapController->size)
+   {
+      status = INVALID_INDEX;
+      goto EXIT;
+   }
+
+   heapController->currentHeap = pos;
 
 EXIT:
    return status;

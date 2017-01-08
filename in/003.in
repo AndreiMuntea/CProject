@@ -1,0 +1,37 @@
+ListMerge
+ListRead
+1 2 3 4
+ListAdd
+5
+ListPrint
+ListMerge
+ListRead 
+-4 2 -10 -4		27482 -444 1925 4000 -4 2 -10 -4		27482 -444 1925 4000 -4 2 -10 -4		27482 -444 1925 4000 -4 2 -10 -4		27482 -444 1925 4000 -4 2 -10 -4		27482 -444 1925 4000 -4 2 -10 -4		27482 -444 1925 4000 -4 2 -10 -4		27482 -444 1925 4000 -4 2 -10 -4		27482 -444 1925 4000 -4 2 -10 -4		27482 -444 1925 4000 -4 2 -10 -4		27482 -444 1925 4000 -4 2 -10 -4		27482 -444 1925 4000 -4 2 -10 -4		27482 -444 1925 4000 -4 2 -10 -4		27482 -444 1925 4000
+ListSort
+ListPrint
+ListMerge
+ListPrint
+ListGoTo
+1
+ListMerge
+ListGoTo
+3
+ListMerge
+ListPrint
+ListGoTo 
+0
+ListSort
+ListPrint
+ListAdd
+2 3
+ListRead
+
+ListGoTo
+0
+ListAdd
+-1			
+ListSort
+ListPrint
+ListGoTo
+5
+ListPrint

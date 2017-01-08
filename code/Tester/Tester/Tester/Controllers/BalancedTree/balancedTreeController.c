@@ -136,14 +136,16 @@ STATUS BalancedTreeRead(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARSER
    status = ZERO_EXIT_STATUS;
    itemsFound = 0;
 
+
    ++treeController->size;
    treeController->currentBalancedSearchTree = treeController->size - 1;
 
-   if (treeController->size >= MAX_BALANCED_TREE_STRUCTS)
+   if (treeController->size > MAX_BALANCED_TREE_STRUCTS)
    {
       status = STRUCTS_LIMIT_REACHED;
       goto EXIT;
    }
+
 
    status = MyBalancedSearchTreeCreate(&(treeController->tree[treeController->currentBalancedSearchTree]));
    if (!SUCCESS(status))
@@ -183,7 +185,9 @@ STATUS BalancedTreeRead(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARSER
 EXIT:
    if (!SUCCESS(status))
    {
-      MyBalancedSearchTreeDestroy(&(treeController->tree[treeController->currentBalancedSearchTree--]));
+      if (treeController->size <= MAX_BALANCED_TREE_STRUCTS) {
+         MyBalancedSearchTreeDestroy(&(treeController->tree[treeController->currentBalancedSearchTree--]));
+      };
       treeController->size--;
    }
    return status;
@@ -279,7 +283,7 @@ STATUS BalancedTreeSearch(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARS
    }
    else
    {
-      err = fprintf_s(outputFile, "%s\n", "NOT FOUND");
+      err = fprintf_s(outputFile, "%s\n", "NOT_FOUND");
    }
    if (err < 0)
    {
@@ -287,6 +291,44 @@ STATUS BalancedTreeSearch(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARS
       goto EXIT;
    }
 
+
+EXIT:
+   return status;
+}
+
+STATUS BalancedTreeGoTo(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARSER parser)
+{
+   STATUS status;
+   BOOLEAN ans;
+   int pos;
+
+   status = ZERO_EXIT_STATUS;
+
+   status = ParserNextInt(parser, &pos);
+   if (!SUCCESS(status))
+   {
+      goto EXIT;
+   }
+
+   status = ParserEmptyLine(parser, &ans);
+   if (!SUCCESS(status))
+   {
+      goto EXIT;
+   }
+
+   if (ans == FALSE)
+   {
+      status = INVALID_COMMAND;
+      goto EXIT;
+   }
+
+   if (pos < 0 || pos >= treeController->size)
+   {
+      status = INVALID_INDEX;
+      goto EXIT;
+   }
+
+   treeController->currentBalancedSearchTree = pos;
 
 EXIT:
    return status;

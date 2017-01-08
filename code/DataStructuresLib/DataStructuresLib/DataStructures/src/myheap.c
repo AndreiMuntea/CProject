@@ -66,10 +66,10 @@ void HeapDown(PMY_HEAP heap, int position)
    rightChildPosition = RightChild(k);
    minChildPosition = LeftChild(k);
 
-   while (minChildPosition <= size)
+   while (minChildPosition < size)
    {
       MyVectorGetElement(heap->items, leftChildPosition, &leftChildElement);
-      if (leftChildPosition < size)
+      if (leftChildPosition < size - 1)
       {
          MyVectorGetElement(heap->items, rightChildPosition, &rightChildElement);
          if (leftChildElement > rightChildElement)

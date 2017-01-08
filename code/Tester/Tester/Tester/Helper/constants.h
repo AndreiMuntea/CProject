@@ -9,13 +9,13 @@ const char* OPEN_FILE_ERR           = "OPEN FILE ERROR";
 const char* END_FILE_ERR            = "END OF FILE ERROR";
 const char* FILE_IO_ERR             = "INPUT/OUTPUT ERROR";
 const char* BUFFER_OVERFLOW_ERR     = "BUFFER OVERFLOW";
-const char* INVALID_ARGUMENT_ERR    = "INVALID ARGUMENT";
-const char* INVALID_COMMAND_ERR     = "INVALID COMMAND";
-const char* INVALID_INPUT_ERR       = "INVALID INPUT";
+const char* INVALID_ARGUMENT_ERR    = "INVALID_ARGUMENT";
+const char* INVALID_COMMAND_ERR     = "INVALID_COMMAND";
+const char* INVALID_INPUT_ERR       = "INVALID_INPUT";
 const char* NULL_POINTER_ERR        = "NULL POINTER EXCEPTION";
 const char* BAD_ALLOCATION_ERR      = "FAILED TO ALLOCATE MEMORY";
-const char* OUT_OF_BOUNDS_ERR       = "INDEX OUT OF BONDS";
-const char* OVERFLOW_ERROR          = "CAPACITY LIMIT REACHED";
+const char* OUT_OF_BOUNDS_ERR       = "OUT_OF_BONDS";
+const char* OVERFLOW_ERROR          = "CAPACITY_LIMIT_REACHED";
 const char* FAILED_TO_EXECUTE_ERR   = "FAILED TO EXECUTE COMMAND";
 const char* UNDEFINED_ERROR         = "UNDEFINED ERROR";
 const char* STRUCTS_LIMIT_ERR       = "NUMBER_OF_STRUCTURES_EXCEEDED";
@@ -26,9 +26,9 @@ const char* INTERNAL_ERROR_OCCURED  = "AN INTERNAL ERROR HAS OCCURED";
 const char* TERMINATE_EXECUTION     = "PROGRAM IS NOW TERMINATING EXECUTION";
 
 
-const char* ITEM_NOT_FOUND_ERROR    = "NOT FOUND";
+const char* ITEM_NOT_FOUND_ERROR    = "NOT_FOUND";
 const char* SUCCESS                 = "SUCCESS";
-const char* CAPACITY_FULL_ERR       = "CAPACITY LIMIT REACHED";
+const char* CAPACITY_FULL_ERR       = "CAPACITY_LIMIT_REACHED";
 
 const char* VECTOR_ADD              = "VectorAdd";
 const char* VECTOR_READ             = "VectorRead";
@@ -48,14 +48,17 @@ const char* LIST_SORT               = "ListSort";
 
 const char* HASH_TABLE_READ         = "HashTableRead";
 const char* HASH_TABLE_SEARCH       = "HashTableSearch";
+const char* HASH_TABLE_GO_TO        = "HashTableGoTo";
 
 const char* TREE_READ               = "TreeRead";
 const char* TREE_INSERT             = "TreeInsert";
 const char* TREE_SEARCH             = "TreeSearch";
 const char* TREE_REMOVE             = "TreeRemove";
+const char* TREE_GO_TO              = "TreeGoTo";
 
 const char* HEAP_READ               = "HeapRead";
 const char* HEAP_INSERT             = "HeapInsert";
 const char* HEAP_REMOVE             = "HeapRemove";
+const char* HEAP_GO_TO              = "HeapGoTo";
 
 #endif //CONSTANTS_H

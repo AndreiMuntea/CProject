@@ -1,0 +1,32 @@
+TreeRead
+1 2 3 4
+TreeRead
+2 3 4 9
+TreeRead
+1 1 1 1 1
+TreeRead
+2 2 2 2 2
+TreeRead
+1 2 3 4
+TreeRead
+2 3 4 9
+TreeRead
+1 1 1 1 1
+TreeRead
+2 2 2 2 2
+TreeRead
+1 1 1 1 1
+TreeRead
+2 2 2 2 2
+TreeRead
+2 2 2 2 2
+TreeGoTo
+9
+TreeRemove
+2
+TreeSearch
+2
+TreeInsert
+2
+TreeSearch
+2

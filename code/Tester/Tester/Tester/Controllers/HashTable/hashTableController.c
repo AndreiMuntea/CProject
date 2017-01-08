@@ -87,11 +87,12 @@ STATUS HashTableRead(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser)
    ++hashController->size;
    hashController->currentHash = hashController->size - 1;
 
-   if (hashController->size >= MAX_HASH_STRUCTS)
+   if (hashController->size > MAX_HASH_STRUCTS)
    {
       status = STRUCTS_LIMIT_REACHED;
       goto EXIT;
    }
+
 
    status = MyHashTableCreate(&(hashController->hash[hashController->currentHash]));
    if (!SUCCESS(status))
@@ -131,7 +132,10 @@ STATUS HashTableRead(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser)
 EXIT:
    if (!SUCCESS(status))
    {
-      MyHashTableDestroy(&(hashController->hash[hashController->currentHash--]));
+      if (hashController->size <= MAX_HASH_STRUCTS)
+      {
+         MyHashTableDestroy(&(hashController->hash[hashController->currentHash--]));
+      }
       hashController->size--;
    }
    return status;
@@ -141,11 +145,9 @@ STATUS HashTableSearch(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser, 
 {
    STATUS status;
    BOOLEAN ans;
-   int res;
    int value;
    int err;
 
-   res = 0;
    err = 0;
    status = ZERO_EXIT_STATUS;
    ans = TRUE;
@@ -177,9 +179,8 @@ STATUS HashTableSearch(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser, 
    }
 
    ans = MyHashTableSearch(hashController->hash[hashController->currentHash], value);
-   res = (ans == TRUE) ? 1 : 0;
-
-   err = fprintf_s(outputFile, "%d\n", res);
+   
+   err = (ans == TRUE) ? fprintf_s(outputFile, "FOUND\n") : fprintf_s(outputFile, "NOT_FOUND\n");
    if (err < 0)
    {
       status = FILE_IO_ERROR;
@@ -187,6 +188,44 @@ STATUS HashTableSearch(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser, 
    }
 
 
+
+EXIT:
+   return status;
+}
+
+STATUS HashTableGoTo(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser)
+{
+   STATUS status;
+   BOOLEAN ans;
+   int pos;
+
+   status = ZERO_EXIT_STATUS;
+
+   status = ParserNextInt(parser, &pos);
+   if (!SUCCESS(status))
+   {
+      goto EXIT;
+   }
+
+   status = ParserEmptyLine(parser, &ans);
+   if (!SUCCESS(status))
+   {
+      goto EXIT;
+   }
+
+   if (ans == FALSE)
+   {
+      status = INVALID_COMMAND;
+      goto EXIT;
+   }
+
+   if (pos < 0 || pos >= hashController->size)
+   {
+      status = INVALID_INDEX;
+      goto EXIT;
+   }
+
+   hashController->currentHash = pos;
 
 EXIT:
    return status;

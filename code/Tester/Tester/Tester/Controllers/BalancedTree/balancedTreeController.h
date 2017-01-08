@@ -30,6 +30,7 @@ STATUS BalancedTreeRemove(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARS
 
 STATUS BalancedTreeSearch(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARSER parser, FILE* outputFile);
 
+STATUS BalancedTreeGoTo(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARSER parser);
 
 
 #endif //BALANCEDTREECONTROLLER_H

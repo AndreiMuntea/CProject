@@ -1,0 +1,28 @@
+HeapRead
+1 2 3 3 4 4 5 5 5 5 5 5 5  5 5  5 5 5 5 -1
+HeapRemove
+HeapInsert
+-24
+HeapInsert
+-25
+HeapRemove
+HeapRemove
+HeapRead
+2 3 -1 -3 -2 -5 10 10 -2 -3 -5 -10
+HeapRemove
+HeapRemove
+HeapRemove
+HeapRemove
+HeapRemove
+HeapRemove
+HeapRemove
+HeapGoTo 
+0
+HeapRemove
+HeapGoTo
+1
+HeapRemove
+HeapRemove
+HeapRemove
+HeapRemove
+HeapRemove
