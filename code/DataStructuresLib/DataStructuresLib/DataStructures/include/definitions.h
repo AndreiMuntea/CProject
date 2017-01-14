@@ -1,6 +1,8 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+#include <Windows.h>
+
 typedef long STATUS;
 
 #define ERROR_BITS                  0xFFFF0000
@@ -18,13 +20,5 @@ typedef long STATUS;
 #define INVALID_INDEX               0x00010000
 #define ITEM_NOT_FOUND              0x00020000
 
-
-
-
-typedef enum _BOOLEAN
-{
-   FALSE = 0,
-   TRUE = 1
-}BOOLEAN;
 
 #endif //DEFINITIONS_H

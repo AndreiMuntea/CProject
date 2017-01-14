@@ -81,9 +81,11 @@ STATUS ListRead(PDOUBLE_LINKED_LIST_CONTROLLER listController, PPARSER parser)
    STATUS status;
    int itemsFound;
    int element;
+   int currentPosition;
 
    status = ZERO_EXIT_STATUS;
    itemsFound = 0;
+   currentPosition = listController->currentList;
 
    ++listController->size;
    listController->currentList = listController->size - 1;
@@ -102,7 +104,7 @@ STATUS ListRead(PDOUBLE_LINKED_LIST_CONTROLLER listController, PPARSER parser)
    }
 
    status = ParserNextInt(parser, &element);
-   while (SUCCESS(status))
+   while (SUCCESS(status) && itemsFound <= MAX_LIST_CAPACITY)
    {
       itemsFound++;
       status = MyDoubleLinkedListInsertAtTail(listController->lists[listController->currentList], element);
@@ -115,19 +117,22 @@ STATUS ListRead(PDOUBLE_LINKED_LIST_CONTROLLER listController, PPARSER parser)
 
    if (EndOfLine(parser) == TRUE)
    {
-      if (itemsFound == 0 || itemsFound >= MAX_LIST_CAPACITY)
+      if (itemsFound == 0)
       {
-         status = INVALID_COMMAND;
+         status = INVALID_INPUT;
+      }
+      else if (itemsFound > MAX_LIST_CAPACITY)
+      {
+         status = CAPACITY_LIMIT_REACHED;
       }
       else
       {
          status = ZERO_EXIT_STATUS;
       }
-      goto EXIT;
    }
    else
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
    }
 
 EXIT:
@@ -138,6 +143,7 @@ EXIT:
       };
 
       listController->size--;
+      listController->currentList = currentPosition;
    }
    return status;
 }
@@ -164,11 +170,11 @@ STATUS ListGoTo(PDOUBLE_LINKED_LIST_CONTROLLER listController, PPARSER parser)
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 
-   if (pos < 0 || pos >= listController->size)
+   if (pos < 0 || pos >= MAX_LIST_STRUCTS)
    {
       status = INVALID_INDEX;
       goto EXIT;
@@ -186,7 +192,13 @@ STATUS ListPrint(PDOUBLE_LINKED_LIST_CONTROLLER listController, FILE* outputFile
 
    status = ZERO_EXIT_STATUS;
 
-   if (listController->currentList == LIST_NOT_SET)
+   if(listController->currentList == LIST_NOT_SET)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
+   if (listController->currentList >= listController->size)
    {
       status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
@@ -224,15 +236,16 @@ STATUS ListMerge(PDOUBLE_LINKED_LIST_CONTROLLER listController)
       goto EXIT;
    }
 
-   status = MyDoubleLinkedListMerge(listController->lists[listController->currentList], listController->lists[listController->currentList - 1], &res);
-   if (!SUCCESS(status))
+   if (MyDoubleLinkedListLength(listController->lists[listController->currentList]) +
+       MyDoubleLinkedListLength(listController->lists[listController->currentList - 1]) > MAX_LIST_CAPACITY)
    {
+      status = CAPACITY_LIMIT_REACHED;
       goto EXIT;
    }
 
-   if (MyDoubleLinkedListLength(res) >= MAX_LIST_CAPACITY)
+   status = MyDoubleLinkedListMerge(listController->lists[listController->currentList], listController->lists[listController->currentList - 1], &res);
+   if (!SUCCESS(status))
    {
-      status = CAPACITY_LIMIT_REACHED;
       goto EXIT;
    }
 
@@ -257,6 +270,12 @@ STATUS ListSort(PDOUBLE_LINKED_LIST_CONTROLLER listController)
    res = NULL;
 
    if (listController->currentList == LIST_NOT_SET)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
+   if (listController->currentList >= listController->size)
    {
       status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
@@ -296,6 +315,12 @@ STATUS ListAdd(PDOUBLE_LINKED_LIST_CONTROLLER listController, PPARSER parser)
       goto EXIT;
    }
 
+   if (listController->currentList >= listController->size)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
    if (MyDoubleLinkedListLength(listController->lists[listController->currentList]) + 1 >= MAX_LIST_CAPACITY)
    {
       status = CAPACITY_LIMIT_REACHED;
@@ -317,7 +342,7 @@ STATUS ListAdd(PDOUBLE_LINKED_LIST_CONTROLLER listController, PPARSER parser)
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 

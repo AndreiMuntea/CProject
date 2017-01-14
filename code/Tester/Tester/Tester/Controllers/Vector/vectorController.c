@@ -80,9 +80,11 @@ STATUS VectorRead(PVECTOR_CONTROLLER vectorController, PPARSER parser)
    STATUS status;
    int itemsFound;
    int element;
+   int currentPosition;
 
    status = ZERO_EXIT_STATUS;
    itemsFound = 0;
+   currentPosition = vectorController->currentVector;
 
    ++vectorController->size;
    vectorController->currentVector = vectorController->size - 1;
@@ -100,7 +102,7 @@ STATUS VectorRead(PVECTOR_CONTROLLER vectorController, PPARSER parser)
    }
 
    status = ParserNextInt(parser, &element);
-   while (SUCCESS(status))
+   while (SUCCESS(status) && itemsFound <= MAX_VECTOR_CAPACITY)
    {
       itemsFound++;
       status = MyVectorInsert(vectorController->vectors[vectorController->currentVector], element);
@@ -113,19 +115,22 @@ STATUS VectorRead(PVECTOR_CONTROLLER vectorController, PPARSER parser)
 
    if (EndOfLine(parser) == TRUE)
    {
-      if (itemsFound == 0 || itemsFound >= MAX_VECTOR_CAPACITY)
+      if (itemsFound == 0)
       {
-         status = INVALID_COMMAND;
+         status = INVALID_INPUT;
+      }
+      else if (itemsFound > MAX_VECTOR_CAPACITY)
+      {
+         status = CAPACITY_LIMIT_REACHED;
       }
       else
       {
          status = ZERO_EXIT_STATUS;
       }
-      goto EXIT;
    }
    else
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
    }
 
 EXIT:
@@ -136,6 +141,7 @@ EXIT:
          MyVectorDestroy(&(vectorController->vectors[vectorController->currentVector--]));
       }
       vectorController->size--;
+      vectorController->currentVector = currentPosition;
    }
    return status;
 }
@@ -147,6 +153,12 @@ STATUS VectorPrint(PVECTOR_CONTROLLER vectorController, FILE* outputFile)
    status = ZERO_EXIT_STATUS;
 
    if (vectorController->currentVector == VECTOR_NOT_SET)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
+   if (vectorController->currentVector >= vectorController->size)
    {
       status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
@@ -181,11 +193,11 @@ STATUS VectorGoTo(PVECTOR_CONTROLLER vectorController, PPARSER parser)
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 
-   if (pos < 0 || pos >= vectorController->size)
+   if (pos < 0 || pos >= MAX_VECTOR_STRUCTS)
    {
       status = INVALID_INDEX;
       goto EXIT;
@@ -206,6 +218,12 @@ STATUS VectorLength(PVECTOR_CONTROLLER vectorController, FILE* outputFile)
    status = ZERO_EXIT_STATUS;
 
    if (vectorController->currentVector == VECTOR_NOT_SET)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
+   if (vectorController->currentVector >= vectorController->size)
    {
       status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
@@ -235,8 +253,13 @@ STATUS VectorSearch(PVECTOR_CONTROLLER vectorController, PPARSER parser, FILE* o
    err = 0;
    element = 0;
 
-
    if (vectorController->currentVector == VECTOR_NOT_SET)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
+   if (vectorController->currentVector >= vectorController->size)
    {
       status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
@@ -256,7 +279,7 @@ STATUS VectorSearch(PVECTOR_CONTROLLER vectorController, PPARSER parser, FILE* o
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 
@@ -288,8 +311,14 @@ STATUS VectorRemovePosition(PVECTOR_CONTROLLER vectorController, PPARSER parser)
    pos = 0;
    status = ZERO_EXIT_STATUS;
 
-
    if (vectorController->currentVector == VECTOR_NOT_SET)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
+
+   if (vectorController->currentVector >= vectorController->size)
    {
       status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
@@ -309,7 +338,7 @@ STATUS VectorRemovePosition(PVECTOR_CONTROLLER vectorController, PPARSER parser)
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 
@@ -333,8 +362,13 @@ STATUS VectorRemoveValue(PVECTOR_CONTROLLER vectorController, PPARSER parser)
    value = 0;
    status = ZERO_EXIT_STATUS;
 
-
    if (vectorController->currentVector == VECTOR_NOT_SET)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
+   if (vectorController->currentVector >= vectorController->size)
    {
       status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
@@ -354,7 +388,7 @@ STATUS VectorRemoveValue(PVECTOR_CONTROLLER vectorController, PPARSER parser)
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 
@@ -378,8 +412,13 @@ STATUS VectorAdd(PVECTOR_CONTROLLER vectorController, PPARSER parser)
    value = 0;
    status = ZERO_EXIT_STATUS;
 
-
    if (vectorController->currentVector == VECTOR_NOT_SET)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
+   if (vectorController->currentVector >= vectorController->size)
    {
       status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
@@ -405,7 +444,7 @@ STATUS VectorAdd(PVECTOR_CONTROLLER vectorController, PPARSER parser)
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 

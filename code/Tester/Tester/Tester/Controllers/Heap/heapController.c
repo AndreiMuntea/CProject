@@ -83,8 +83,13 @@ STATUS HeapInsert(PHEAP_CONTROLLER heapController, PPARSER parser)
    value = 0;
    status = ZERO_EXIT_STATUS;
 
+   if(heapController->currentHeap == HEAP_NOT_SET)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
 
-   if (heapController->currentHeap == HEAP_NOT_SET)
+   if (heapController->currentHeap >= heapController->size)
    {
       status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
@@ -110,7 +115,7 @@ STATUS HeapInsert(PHEAP_CONTROLLER heapController, PPARSER parser)
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 
@@ -130,9 +135,11 @@ STATUS HeapRead(PHEAP_CONTROLLER heapController, PPARSER parser)
    STATUS status;
    int itemsFound;
    int element;
+   int currentPosition;
 
    status = ZERO_EXIT_STATUS;
    itemsFound = 0;
+   currentPosition = heapController->currentHeap;
 
    ++heapController->size;
    heapController->currentHeap = heapController->size - 1;
@@ -151,7 +158,7 @@ STATUS HeapRead(PHEAP_CONTROLLER heapController, PPARSER parser)
    }
 
    status = ParserNextInt(parser, &element);
-   while (SUCCESS(status))
+   while (SUCCESS(status) && itemsFound <= MAX_HEAP_CAPACITY)
    {
       itemsFound++;
       status = MyHeapInsert(heapController->heap[heapController->currentHeap], element);
@@ -164,19 +171,22 @@ STATUS HeapRead(PHEAP_CONTROLLER heapController, PPARSER parser)
 
    if (EndOfLine(parser) == TRUE)
    {
-      if (itemsFound == 0 || itemsFound >= MAX_HEAP_CAPACITY)
+      if (itemsFound == 0)
       {
-         status = INVALID_COMMAND;
+         status = INVALID_INPUT;
+      }
+      else if (itemsFound > MAX_HEAP_CAPACITY)
+      {
+         status = CAPACITY_LIMIT_REACHED;
       }
       else
       {
          status = ZERO_EXIT_STATUS;
       }
-      goto EXIT;
    }
    else
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
    }
 
 EXIT:
@@ -187,6 +197,7 @@ EXIT:
          MyHeapDestroy(&(heapController->heap[heapController->currentHeap--]));
       }
       heapController->size--;
+      heapController->currentHeap = currentPosition;
    }
    return status;
 }
@@ -199,8 +210,13 @@ STATUS HeapRemove(PHEAP_CONTROLLER heapController, FILE* outputFile)
 
    status = ZERO_EXIT_STATUS;
 
-
    if (heapController->currentHeap == HEAP_NOT_SET)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
+   if (heapController->currentHeap >= heapController->size)
    {
       status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
@@ -252,11 +268,11 @@ STATUS HeapGoTo(PHEAP_CONTROLLER heapController, PPARSER parser)
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 
-   if (pos < 0 || pos >= heapController->size)
+   if (pos < 0 || pos >= MAX_HEAP_STRUCTS)
    {
       status = INVALID_INDEX;
       goto EXIT;

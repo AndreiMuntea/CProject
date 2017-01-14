@@ -240,3 +240,52 @@ STATUS StringAppend(char** destination, const char* source)
 EXIT:
    return status;
 }
+
+STATUS ToString(int number, char** result)
+{
+   STATUS status;
+   char* dest;
+   int numberOfDigits;
+   int aux;
+
+   status = ZERO_EXIT_STATUS;
+   dest = NULL;
+   numberOfDigits = 0;
+   aux = number;
+
+   if(NULL == result)
+   {
+      status = NULL_POINTER;
+      goto EXIT;
+   }
+
+   if (aux == 0) numberOfDigits = 1;
+   else
+   {
+      while(aux > 0)
+      {
+         numberOfDigits++;
+         aux /= 10;
+      }
+   }
+
+   dest = (char*)malloc((numberOfDigits + 1) * sizeof(char));
+   if(NULL == dest)
+   {
+      status = BAD_ALLOCATION;
+      goto EXIT;
+   }
+
+   SetZero(dest, numberOfDigits + 1);
+   
+   while (numberOfDigits > 0)
+   {
+      dest[numberOfDigits - 1] = (number % 10) + '0';
+      number /= 10;
+      numberOfDigits--;
+   }
+
+   *result = dest;
+EXIT:
+   return status;
+}

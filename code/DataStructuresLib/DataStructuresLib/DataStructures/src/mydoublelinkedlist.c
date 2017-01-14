@@ -33,80 +33,111 @@ EXIT:
    return status;
 }
 
-STATUS SplitList(PMY_DOUBLE_LINKED_LIST list, PMY_DOUBLE_LINKED_LIST* firstHalf, PMY_DOUBLE_LINKED_LIST* secondHalf)
+void Append(PMY_DOUBLE_LINKED_LIST result, PNODE node)
 {
-   STATUS status;
-   PNODE fast;
-   PNODE lazy;
-   PMY_DOUBLE_LINKED_LIST first;
-   PMY_DOUBLE_LINKED_LIST second;
-
-   status = ZERO_EXIT_STATUS;
-   first = NULL;
-   second = NULL;
-   fast = NULL;
-   lazy = NULL;
-
-   if (NULL == firstHalf)
+   if(result->head == NULL)
    {
-      status = NULL_POINTER;
-      goto EXIT;
+      result->head = node;
+      result->tail = node;
+      node->next = NULL;
+      node->previous = NULL;
+   }
+   else
+   {
+      result->tail->next = node;
+      node->previous = result->tail;
+      node->next = NULL;
+      result->tail = node;
+   }
+}
+
+void ResetList(PMY_DOUBLE_LINKED_LIST list)
+{
+   list->head = NULL;
+   list->tail = NULL;
+}
+
+PNODE PartitionList(PMY_DOUBLE_LINKED_LIST list, int len, PNODE start)
+{
+   PNODE nodeBegin;
+   PNODE nodeEnd;
+
+   nodeBegin = start;
+   nodeEnd = start;
+
+   while(start != NULL && len > 0)
+   {
+      nodeEnd = start;
+      start = start->next;
+      len--;
    }
 
-   if (NULL == secondHalf)
+   if(NULL != nodeEnd)
    {
-      status = NULL_POINTER;
-      goto EXIT;
+      nodeEnd->next = NULL;
    }
 
-   status = MyDoubleLinkedListCreate(&first);
-   if (!SUCCESS(status))
+   list->head = nodeBegin;
+   list->tail = nodeEnd;
+
+   return start;
+}
+
+void JoinLists(PMY_DOUBLE_LINKED_LIST firstList, PMY_DOUBLE_LINKED_LIST secondList)
+{
+   if (NULL == firstList->head)
    {
-      goto EXIT;
+      firstList->head = secondList->head;
+      firstList->tail = secondList->tail;
    }
-
-   status = MyDoubleLinkedListCreate(&second);
-   if (!SUCCESS(status))
+   else
    {
-      goto EXIT;
+      firstList->tail->next = secondList->head;
+      secondList->head->previous = firstList->tail;
+      firstList->tail = secondList->tail;
    }
+}
 
-   fast = list->head;
-   lazy = list->head;
+void MergeListsInPlace(PMY_DOUBLE_LINKED_LIST list1, PMY_DOUBLE_LINKED_LIST list2, PMY_DOUBLE_LINKED_LIST result)
+{
+   PNODE currentFirst;
+   PNODE currentSecond;
+   PNODE tmp;
 
-   while (fast != NULL && fast->next != NULL)
+   currentFirst = list1->head;
+   currentSecond = list2->head;
+   tmp = NULL;
+
+   while (currentFirst != NULL && currentSecond != NULL)
    {
-      status = MyDoubleLinkedListInsertAtTail(first, lazy->data);
-      lazy = lazy->next;
-      fast = fast->next->next;
-
-      if (!SUCCESS(status))
+      if(currentFirst->data < currentSecond->data)
       {
-         goto EXIT;
+         tmp = currentFirst->next;
+         Append(result, currentFirst);
+         currentFirst = tmp;
+      }
+      else
+      {
+         tmp = currentSecond->next;
+         Append(result, currentSecond);
+         currentSecond = tmp;
       }
    }
 
-   while (lazy != NULL)
+   while(currentFirst != NULL)
    {
-      status = MyDoubleLinkedListInsertAtTail(second, lazy->data);
-      lazy = lazy->next;
-
-      if (!SUCCESS(status))
-      {
-         goto EXIT;
-      }
+      tmp = currentFirst->next;
+      Append(result, currentFirst);
+      currentFirst = tmp;
    }
 
-   *firstHalf = first;
-   *secondHalf = second;
-
-EXIT:
-   if (!SUCCESS(status))
+   while(currentSecond != NULL)
    {
-      MyDoubleLinkedListDestroy(&first);
-      MyDoubleLinkedListDestroy(&second);
+      tmp = currentSecond->next;
+      Append(result, currentSecond);
+      currentSecond = tmp;
    }
-   return status;
+
 }
 
 
@@ -315,78 +346,57 @@ EXIT:
 STATUS MyDoubleLinkedListSort(PMY_DOUBLE_LINKED_LIST list, PMY_DOUBLE_LINKED_LIST* result)
 {
    STATUS status;
-   PMY_DOUBLE_LINKED_LIST res;
-   PMY_DOUBLE_LINKED_LIST firstHalf;
-   PMY_DOUBLE_LINKED_LIST secondHalf;
-   PMY_DOUBLE_LINKED_LIST sortedFirstHalf;
-   PMY_DOUBLE_LINKED_LIST sortedSecondHalf;
+   PMY_DOUBLE_LINKED_LIST tempList;
+   MY_DOUBLE_LINKED_LIST firstHalf;
+   MY_DOUBLE_LINKED_LIST secondHalf;
+   MY_DOUBLE_LINKED_LIST merged;
+   MY_DOUBLE_LINKED_LIST splitedList;
+   PNODE current;
 
+   int len;
+   int listLength;
+
+   len = 0;
+   listLength = 0;
    status = ZERO_EXIT_STATUS;
-   res = NULL;
-   firstHalf = NULL;
-   secondHalf = NULL;
-   sortedFirstHalf = NULL;
-   sortedSecondHalf = NULL;
+   current = NULL;
 
-   if (NULL == result)
+   status = MyDoubleLinkedListCopy(list, &tempList);
+   if(!SUCCESS(status))
    {
-      status = NULL_POINTER;
       goto EXIT;
    }
 
-   if(NULL == list->head)
-   {
-      status = MyDoubleLinkedListCreate(result);
-      goto EXIT;
-   }
+   listLength = MyDoubleLinkedListLength(tempList);
+   len = 1;
 
-   if (NULL == list->head->next)
+   while(len < listLength)
    {
-      status = MyDoubleLinkedListCreate(result);
-      if (!SUCCESS(status))
+      current = tempList->head;
+      ResetList(&splitedList);
+      while(current != NULL)
       {
-         goto EXIT;
+         ResetList(&firstHalf);
+         ResetList(&secondHalf);
+         ResetList(&merged);
+
+         current = PartitionList(&firstHalf, len, current);
+         current = PartitionList(&secondHalf, len, current);
+         MergeListsInPlace(&firstHalf, &secondHalf, &merged);
+         JoinLists(&splitedList, &merged);
       }
-
-      status = MyDoubleLinkedListInsertAtTail(*result, list->head->data);
-      goto EXIT;
+      tempList->head = splitedList.head;
+      tempList->tail = splitedList.tail;
+      len *= 2;
    }
 
-   status = SplitList(list, &firstHalf, &secondHalf);
-   if (!SUCCESS(status))
-   {
-      goto EXIT;
-   }
-
-   status = MyDoubleLinkedListSort(firstHalf, &sortedFirstHalf);
-   if (!SUCCESS(status))
-   {
-      goto EXIT;
-   }
-
-   status = MyDoubleLinkedListSort(secondHalf, &sortedSecondHalf);
-   if (!SUCCESS(status))
-   {
-      goto EXIT;
-   }
-
-   status = MyDoubleLinkedListMerge(sortedFirstHalf, sortedSecondHalf, &res);
-   if (!SUCCESS(status))
-   {
-      goto EXIT;
-   }
-
-   *result = res;
+   *result = tempList;
 
 EXIT:
-   if (!SUCCESS(status))
+   if(!SUCCESS(status))
    {
-      MyDoubleLinkedListDestroy(&res);
+      MyDoubleLinkedListDestroy(&tempList);
    }
-   MyDoubleLinkedListDestroy(&firstHalf);
-   MyDoubleLinkedListDestroy(&secondHalf);
-   MyDoubleLinkedListDestroy(&sortedFirstHalf);
-   MyDoubleLinkedListDestroy(&sortedSecondHalf);
    return status;
 }
 
@@ -445,6 +455,49 @@ STATUS MyDoubleLinkedListPrint(PMY_DOUBLE_LINKED_LIST list, FILE* outputFile)
    }
 
 EXIT:
+   return status;
+}
+
+STATUS MyDoubleLinkedListCopy(PMY_DOUBLE_LINKED_LIST list, PMY_DOUBLE_LINKED_LIST* result)
+{
+   STATUS status;
+   PMY_DOUBLE_LINKED_LIST tempList;
+   PNODE current;
+
+   tempList = NULL;
+   status = ZERO_EXIT_STATUS;
+   current = NULL;
+
+   if (NULL == result)
+   {
+      status = NULL_POINTER;
+      goto EXIT;
+   }
+
+   status = MyDoubleLinkedListCreate(&tempList);
+   if(!SUCCESS(status))
+   {
+      goto EXIT;
+   }
+
+   current = list->head;
+   while(current!= NULL)
+   {
+      status = MyDoubleLinkedListInsertAtTail(tempList, current->data);
+      if(!SUCCESS(status))
+      {
+         goto EXIT;
+      }
+      current = current->next;
+   }
+
+   *result = tempList;
+
+EXIT:
+   if(!SUCCESS(status))
+   {
+      MyDoubleLinkedListDestroy(&tempList);
+   }
    return status;
 }
 

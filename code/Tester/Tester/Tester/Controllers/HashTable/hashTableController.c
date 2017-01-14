@@ -2,6 +2,7 @@
 
 #include "hashTableController.h"
 #include "../controllerStatuses.h"
+#include "../Heap/heapController.h"
 
 STATUS HashTableControllerCreate(PMY_HASHTABLE_CONTROLLER* hashController)
 {
@@ -80,9 +81,11 @@ STATUS HashTableRead(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser)
    STATUS status;
    int itemsFound;
    int element;
+   int currentPosition;
 
    status = ZERO_EXIT_STATUS;
    itemsFound = 0;
+   currentPosition = hashController->currentHash;
 
    ++hashController->size;
    hashController->currentHash = hashController->size - 1;
@@ -101,7 +104,7 @@ STATUS HashTableRead(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser)
    }
 
    status = ParserNextInt(parser, &element);
-   while (SUCCESS(status))
+   while (SUCCESS(status) && itemsFound <= MAX_HASH_CAPACITY)
    {
       itemsFound++;
       status = MyHashTableInsert(hashController->hash[hashController->currentHash], element);
@@ -114,19 +117,22 @@ STATUS HashTableRead(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser)
 
    if (EndOfLine(parser) == TRUE)
    {
-      if (itemsFound == 0 || itemsFound >= MAX_HASH_CAPACITY)
+      if (itemsFound == 0)
       {
-         status = INVALID_COMMAND;
+         status = INVALID_INPUT;
+      }
+      else if (itemsFound > MAX_HASH_CAPACITY)
+      {
+         status = CAPACITY_LIMIT_REACHED;
       }
       else
       {
          status = ZERO_EXIT_STATUS;
       }
-      goto EXIT;
    }
    else
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
    }
 
 EXIT:
@@ -137,6 +143,7 @@ EXIT:
          MyHashTableDestroy(&(hashController->hash[hashController->currentHash--]));
       }
       hashController->size--;
+      hashController->currentHash = currentPosition;
    }
    return status;
 }
@@ -153,7 +160,13 @@ STATUS HashTableSearch(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser, 
    ans = TRUE;
    value = 0;
 
-   if (hashController->currentHash == HASH_NOT_SET)
+   if(hashController->currentHash == HASH_NOT_SET)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
+   if (hashController->currentHash >= hashController->size)
    {
       status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
@@ -174,7 +187,7 @@ STATUS HashTableSearch(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser, 
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 
@@ -215,11 +228,11 @@ STATUS HashTableGoTo(PMY_HASHTABLE_CONTROLLER hashController, PPARSER parser)
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 
-   if (pos < 0 || pos >= hashController->size)
+   if (pos < 0 || pos >= MAX_HASH_STRUCTS)
    {
       status = INVALID_INDEX;
       goto EXIT;

@@ -202,14 +202,8 @@ STATUS MyHeapRemove(PMY_HEAP heap)
    MyVectorSetElement(heap->items, 0, element);
    MyVectorRemovePosition(heap->items, size - 1);
    
-   if (size - 1 == 0)
-   {
-      goto EXIT;
-   }
-
    HeapDown(heap, 0);
    heap->size--;
-
 EXIT:
    return status;
 }
@@ -231,7 +225,14 @@ STATUS MyHeapGetMin(PMY_HEAP heap, int* element)
       goto EXIT;
    }
 
+   if(heap->size == 0)
+   {
+      status = ITEM_NOT_FOUND;
+      goto EXIT;
+   }
+
    status = MyVectorGetElement(heap->items, 0, element);
+   
 
 
 EXIT:

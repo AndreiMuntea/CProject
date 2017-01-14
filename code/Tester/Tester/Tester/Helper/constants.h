@@ -1,9 +1,9 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-const char* IN_FILES_PATH           = "D:\\Projects\\C Projects\\ProjectC\\in\\";
-const char* OUT_FILES_PATH          = "D:\\Projects\\C Projects\\ProjectC\\out\\";
-const char* RES_FILES_PATH          = "D:\\Projects\\C Projects\\ProjectC\\res\\";
+const char* IN_FILES_PATH           = "in\\";
+const char* OUT_FILES_PATH          = "out\\";
+const char* RES_FILES_PATH          = "res\\";
 
 const char* OPEN_FILE_ERR           = "OPEN FILE ERROR";
 const char* END_FILE_ERR            = "END OF FILE ERROR";
@@ -14,7 +14,7 @@ const char* INVALID_COMMAND_ERR     = "INVALID_COMMAND";
 const char* INVALID_INPUT_ERR       = "INVALID_INPUT";
 const char* NULL_POINTER_ERR        = "NULL POINTER EXCEPTION";
 const char* BAD_ALLOCATION_ERR      = "FAILED TO ALLOCATE MEMORY";
-const char* OUT_OF_BOUNDS_ERR       = "OUT_OF_BONDS";
+const char* OUT_OF_BOUNDS_ERR       = "INDEX_OUT_OF_BOUNDS";
 const char* OVERFLOW_ERROR          = "CAPACITY_LIMIT_REACHED";
 const char* FAILED_TO_EXECUTE_ERR   = "FAILED TO EXECUTE COMMAND";
 const char* UNDEFINED_ERROR         = "UNDEFINED ERROR";

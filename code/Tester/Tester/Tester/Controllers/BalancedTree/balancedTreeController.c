@@ -85,10 +85,15 @@ STATUS BalancedTreeInsert(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARS
    value = 0;
    status = ZERO_EXIT_STATUS;
 
-
-   if (treeController->currentBalancedSearchTree == BALANCED_TREE_NOT_SET)
+   if(treeController->currentBalancedSearchTree == BALANCED_TREE_NOT_SET)
    {
-      status = INVALID_INDEX;
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
+   if (treeController->currentBalancedSearchTree >= treeController->size)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
    }
 
@@ -112,7 +117,7 @@ STATUS BalancedTreeInsert(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARS
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 
@@ -132,9 +137,11 @@ STATUS BalancedTreeRead(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARSER
    STATUS status;
    int itemsFound;
    int element;
+   int currentPosition;
 
    status = ZERO_EXIT_STATUS;
    itemsFound = 0;
+   currentPosition = treeController->currentBalancedSearchTree;
 
 
    ++treeController->size;
@@ -154,7 +161,7 @@ STATUS BalancedTreeRead(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARSER
    }
 
    status = ParserNextInt(parser, &element);
-   while (SUCCESS(status))
+   while (SUCCESS(status) && itemsFound <= MAX_BALANCED_TREE_CAPACITY)
    {
       itemsFound++;
       status = MyBalancedSearchTreeInsert(treeController->tree[treeController->currentBalancedSearchTree], element);
@@ -167,19 +174,22 @@ STATUS BalancedTreeRead(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARSER
 
    if (EndOfLine(parser) == TRUE)
    {
-      if (itemsFound == 0 || itemsFound >= MAX_BALANCED_TREE_CAPACITY)
+      if (itemsFound == 0)
       {
-         status = INVALID_COMMAND;
+         status = INVALID_INPUT;
+      }
+      else if (itemsFound > MAX_BALANCED_TREE_CAPACITY)
+      {
+         status = CAPACITY_LIMIT_REACHED;
       }
       else
       {
          status = ZERO_EXIT_STATUS;
       }
-      goto EXIT;
    }
    else
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
    }
 
 EXIT:
@@ -189,6 +199,7 @@ EXIT:
          MyBalancedSearchTreeDestroy(&(treeController->tree[treeController->currentBalancedSearchTree--]));
       };
       treeController->size--;
+      treeController->currentBalancedSearchTree = currentPosition;
    }
    return status;
 }
@@ -202,10 +213,15 @@ STATUS BalancedTreeRemove(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARS
    value = 0;
    status = ZERO_EXIT_STATUS;
 
-
    if (treeController->currentBalancedSearchTree == BALANCED_TREE_NOT_SET)
    {
-      status = INVALID_INDEX;
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
+   if (treeController->currentBalancedSearchTree >= treeController->size)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
    }
 
@@ -223,7 +239,7 @@ STATUS BalancedTreeRemove(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARS
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 
@@ -249,10 +265,15 @@ STATUS BalancedTreeSearch(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARS
    err = 0;
    element = 0;
 
-
    if (treeController->currentBalancedSearchTree == BALANCED_TREE_NOT_SET)
    {
-      status = INVALID_INDEX;
+      status = CURRENT_STRUCTURE_UNDEFINED;
+      goto EXIT;
+   }
+
+   if (treeController->currentBalancedSearchTree >= treeController->size)
+   {
+      status = CURRENT_STRUCTURE_UNDEFINED;
       goto EXIT;
    }
 
@@ -270,7 +291,7 @@ STATUS BalancedTreeSearch(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARS
 
    if (ans == FALSE)
    {
-      status = INVALID_COMMAND;
+      status = INVALID_INPUT;
       goto EXIT;
    }
 
@@ -322,7 +343,7 @@ STATUS BalancedTreeGoTo(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARSER
       goto EXIT;
    }
 
-   if (pos < 0 || pos >= treeController->size)
+   if (pos < 0 || pos >= MAX_BALANCED_TREE_STRUCTS)
    {
       status = INVALID_INDEX;
       goto EXIT;

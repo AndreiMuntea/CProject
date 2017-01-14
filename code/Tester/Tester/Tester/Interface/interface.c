@@ -165,7 +165,7 @@ const char* ErrorMessage(STATUS errorStatus)
    case PREVIOUS_STRUCTURE_UNDEFINED:
       return UNDEFINED_PREVIOUS;
    case BUFFER_OVERFLOW:
-      return INVALID_COMMAND_ERR;
+      return INVALID_INPUT_ERR;
    default:
       return UNDEFINED_ERROR;
    }
@@ -471,6 +471,7 @@ STATUS AnalyzeCommand(PMY_INTERFACE myInterface, const char* command)
    else
    {
       status = INVALID_COMMAND;
+      goto EXIT;
    }
 
    flushStatus = ParserFlushLine(myInterface->parser);
@@ -511,6 +512,8 @@ STATUS RunSingleTest(const char* fileName)
       goto EXIT;
    }
 
+   printf_s("Running test: %s\n", fileName);
+
    while (SUCCESS(status))
    {
       status = ParserNextString(myInterface->parser, &command, MAX_COMMAND_LENGTH);
@@ -526,11 +529,7 @@ STATUS RunSingleTest(const char* fileName)
          {
             goto EXIT;
          }
-         status = ParserFlushLine(myInterface->parser);
-         if (INTERNAL_ERROR(status))
-         {
-            goto EXIT;
-         }
+
          status = INVALID_COMMAND;
          status = TreatError(myInterface, status);
       }
@@ -545,7 +544,7 @@ STATUS RunSingleTest(const char* fileName)
       }
       free(command);
       command = NULL;
-      
+
       if (EndOfFile(myInterface->parser) == TRUE)
       {
          break;
@@ -562,5 +561,119 @@ EXIT:
 
    free(file);
    InterfaceDestroy(&myInterface);
+   return status;
+}
+
+STATUS RunMultipleTests(const char* startTest, const char* endTest)
+{
+   STATUS status;
+   int first, last;
+   char* test;
+
+   status = ZERO_EXIT_STATUS;
+   first = ToInt(startTest);
+   last = ToInt(endTest);
+   test = NULL;
+
+   while (first < last)
+   {
+      status = ToString(first, &test);
+      if(!SUCCESS(status))
+      {
+         TreatFatalError(status);
+         goto EXIT;
+      }
+
+      status = RunSingleTest(test);
+      if (!SUCCESS(status))
+      {
+         goto EXIT;
+      }
+
+      first++;
+      free(test);
+      test = NULL;
+   }
+
+EXIT:
+   free(test);
+   test = NULL;
+
+   return status;
+}
+
+STATUS RunAllTests()
+{
+   STATUS status;
+   FILE* currentFile;
+   char* fileName;
+   char* file;
+   char* testFileName;
+   int current;
+   int err;
+
+   status = ZERO_EXIT_STATUS;
+   currentFile = NULL;
+   fileName = NULL;
+   current = 1;
+   file = NULL;
+   testFileName = NULL;
+   err = 0;
+
+   while(1)
+   {
+      status = ToString(current, &file);
+      if (!SUCCESS(status))
+      {
+         TreatFatalError(status);
+         goto EXIT;
+      }
+
+      status = CreateTestFileName(&testFileName, file);
+      if (!SUCCESS(status))
+      {
+         TreatFatalError(status);
+         goto EXIT;
+      }
+
+      status = CreateInputFile(&fileName, testFileName);
+      if(!SUCCESS(status))
+      {
+         TreatFatalError(status);
+         goto EXIT;
+      }
+
+      err = fopen_s(&currentFile, fileName, "r");
+      if (err != 0)
+      {
+         break;
+      }
+      fclose(currentFile);
+
+      status = RunSingleTest(file);
+      if(!SUCCESS(status))
+      {
+         goto EXIT;
+      }
+
+      free(file);
+      free(fileName);
+      free(testFileName);
+
+      testFileName = NULL;
+      file = NULL;
+      fileName = NULL;
+      current++;
+   }
+
+EXIT:
+   free(testFileName);
+   free(fileName);
+   free(file);
+
+   testFileName = NULL;
+   file = NULL;
+   fileName = NULL;
+
    return status;
 }

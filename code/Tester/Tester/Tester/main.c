@@ -1,24 +1,34 @@
 #define _CRTDBG_MAP_ALLOC  
 #include <stdlib.h>  
-#include <crtdbg.h> 
-
+#include <crtdbg.h>
 #include "Interface/interface.h"
+#include "Helper/stringhelper.h"
 
 int main(int argc, char* argv[])
 {
    STATUS status; 
    status = ZERO_EXIT_STATUS;
 
-   if (argc != 2)
+   if (argc == 3)
    {
-      printf("Invalid number of arguments");
-      status = 1;
-      goto EXIT;
+      status = RunMultipleTests(argv[1], argv[2]);
    }
-
-   status = RunSingleTest(argv[1]);
-
-EXIT:
+   else if (argc == 2)
+   {
+      if (EqualStrings(argv[1], "runall") == TRUE)
+      {
+         status = RunAllTests();
+      }
+      else
+      {
+         status = RunSingleTest(argv[1]);
+      }
+   }
+   else
+   {
+      fprintf_s(stderr, "Invalid number of arguments!\n");
+   }
+   
    _CrtDumpMemoryLeaks();
    return status;
 }

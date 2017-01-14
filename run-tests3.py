@@ -79,12 +79,12 @@ def generate_test_files(args):
 	else:
 		if args.last is None:
 			args.last = args.test + 1
-		for test_id in xrange(args.test, args.last):
+		for test_id in range(args.test, args.last):
 			test_name = str(test_id).zfill(3)
 			yield(
 				test_name, 
 				os.path.join(args.out_dir, test_name + ".out"), 
-				os.path.join(args.out_dir, test_name + ".res"), 
+				os.path.join(args.res_dir, test_name + ".res"), 
 			)
 
 def call_tester(path, test=None, last=None, cwd=None, suppress=False):
