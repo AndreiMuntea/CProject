@@ -1,9 +1,9 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-const char* IN_FILES_PATH           = "in\\";
-const char* OUT_FILES_PATH          = "out\\";
-const char* RES_FILES_PATH          = "res\\";
+const char* IN_FILES_PATH           = "D:\\Projects\\C Projects\\ProjectC\\in\\";
+const char* OUT_FILES_PATH          = "D:\\Projects\\C Projects\\ProjectC\\out\\";
+const char* RES_FILES_PATH          = "D:\\Projects\\C Projects\\ProjectC\\res\\";
 
 const char* OPEN_FILE_ERR           = "OPEN FILE ERROR";
 const char* END_FILE_ERR            = "END OF FILE ERROR";

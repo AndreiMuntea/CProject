@@ -26,7 +26,7 @@ _inline BOOLEAN IsDigit(char c)
 
 BOOLEAN EndOfFile(PPARSER parser)
 {
-   return (feof(parser->file) && parser->bufferSize <= parser->currentIndex) ? TRUE : FALSE;
+   return (feof(parser->file) && parser->bufferSize  == 0) ? TRUE : FALSE;
 }
 
 BOOLEAN EndOfLine(PPARSER parser)

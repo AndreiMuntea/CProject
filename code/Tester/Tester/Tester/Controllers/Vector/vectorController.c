@@ -424,7 +424,7 @@ STATUS VectorAdd(PVECTOR_CONTROLLER vectorController, PPARSER parser)
       goto EXIT;
    }
 
-   if (MyVectorLength(vectorController->vectors[vectorController->currentVector]) + 1 >= MAX_VECTOR_CAPACITY)
+   if (MyVectorLength(vectorController->vectors[vectorController->currentVector]) + 1 > MAX_VECTOR_CAPACITY)
    {
       status = CAPACITY_LIMIT_REACHED;
       goto EXIT;

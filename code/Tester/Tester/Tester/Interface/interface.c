@@ -584,11 +584,7 @@ STATUS RunMultipleTests(const char* startTest, const char* endTest)
          goto EXIT;
       }
 
-      status = RunSingleTest(test);
-      if (!SUCCESS(status))
-      {
-         goto EXIT;
-      }
+      RunSingleTest(test);
 
       first++;
       free(test);
@@ -650,11 +646,7 @@ STATUS RunAllTests()
       }
       fclose(currentFile);
 
-      status = RunSingleTest(file);
-      if(!SUCCESS(status))
-      {
-         goto EXIT;
-      }
+      RunSingleTest(file);
 
       free(file);
       free(fileName);

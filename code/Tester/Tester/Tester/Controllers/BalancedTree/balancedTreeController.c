@@ -97,7 +97,7 @@ STATUS BalancedTreeInsert(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARS
       goto EXIT;
    }
 
-   if (MyBalancedSearchTreeSize(treeController->tree[treeController->currentBalancedSearchTree]) + 1 >= MAX_BALANCED_TREE_CAPACITY)
+   if (MyBalancedSearchTreeSize(treeController->tree[treeController->currentBalancedSearchTree]) + 1 > MAX_BALANCED_TREE_CAPACITY)
    {
       status = CAPACITY_LIMIT_REACHED;
       goto EXIT;
@@ -163,12 +163,12 @@ STATUS BalancedTreeRead(PBALANCED_SEARCH_TREE_CONTROLLER treeController, PPARSER
    status = ParserNextInt(parser, &element);
    while (SUCCESS(status) && itemsFound <= MAX_BALANCED_TREE_CAPACITY)
    {
-      itemsFound++;
       status = MyBalancedSearchTreeInsert(treeController->tree[treeController->currentBalancedSearchTree], element);
       if (!SUCCESS(status))
       {
          goto EXIT;
       }
+      itemsFound = MyBalancedSearchTreeSize(treeController->tree[treeController->currentBalancedSearchTree]);
       status = ParserNextInt(parser, &element);
    }
 

@@ -95,7 +95,7 @@ STATUS HeapInsert(PHEAP_CONTROLLER heapController, PPARSER parser)
       goto EXIT;
    }
 
-   if (MyHeapLength(heapController->heap[heapController->currentHeap]) + 1 >= MAX_HEAP_CAPACITY)
+   if (MyHeapLength(heapController->heap[heapController->currentHeap]) + 1 > MAX_HEAP_CAPACITY)
    {
       status = CAPACITY_LIMIT_REACHED;
       goto EXIT;

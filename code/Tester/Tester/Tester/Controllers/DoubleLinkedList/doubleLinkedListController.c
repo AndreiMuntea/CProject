@@ -321,7 +321,7 @@ STATUS ListAdd(PDOUBLE_LINKED_LIST_CONTROLLER listController, PPARSER parser)
       goto EXIT;
    }
 
-   if (MyDoubleLinkedListLength(listController->lists[listController->currentList]) + 1 >= MAX_LIST_CAPACITY)
+   if (MyDoubleLinkedListLength(listController->lists[listController->currentList]) + 1 > MAX_LIST_CAPACITY)
    {
       status = CAPACITY_LIMIT_REACHED;
       goto EXIT;
